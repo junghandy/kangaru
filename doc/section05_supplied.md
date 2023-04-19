@@ -1,7 +1,7 @@
 Supplied Services
 =================
 
-Indeed, when a service is single, `service()` won't accept argument to forward to the constructor.
+Indeed, when a service is single, `service()` won't accept arguments to forward to the constructor.
 This is because only the first call to `service()` creates an instance. Consider this code (bad example):
 
 ```c++
@@ -12,7 +12,7 @@ Scene& scene2 = c.service<SceneService>(1920, 1080); // Oops! Constructor not ca
 // The scene still have a resolution of 1024x768
 ```
 
-As a matter of fact, the `service` function has no mean to tell if the service has actually been created here.
+As a matter of fact, the `service` function has no means of telling if the service has actually been created here.
 To resolve this, you can instead request the constuction of a service with the `emplace(...)` function.
 That function will perform injection like `service()`, but serves only to save a single into the container.
 Just like `std::map`, emplace only perform initialization if the container don't contain and instance yet.
@@ -29,7 +29,7 @@ Scene& scene = container.service<SceneService>(); // Returns the instance create
 ```
 
 As we can see, `emplace` only constructs if the element is not found.
-But as opposed to `service`, it can reports if it has already been inserted before.
+But as opposed to `service`, it can report if it has already been inserted before.
 This gives us the opportunity to handle those case correctly.
 
 ## Supplied Services
@@ -50,18 +50,18 @@ private:
 Scene& scene = container.service<SceneService>(); // fails!
 ```
 
-It's constructor must receive two additional integers after it's dependencies.
+Its constructor must receive two additional integers after its dependencies.
 Since `container.service<SceneService>()` must create a scene and does not forward any arguments to single services,
-there are no way to obtain a scene from the container!
+there is no way to obtain a scene from the container!
 
-In these cases, we must tell the container that it's normal it cannot construct it without arguments,
+In these cases, we must tell the container that it's normal that it cannot construct the service without arguments,
 and must be provided to the container before usage.
 
 ```c++
 struct SceneService : kgr::single_service<Scene, kgr::dependency<CameraService>>, kgr::supplied {};
 ```
 
-Now, we can use the service like this:
+Now we can use the service like this:
 
 ```c++
 container.emplace<SceneService>(1920, 1080); // contruct a scene in the container.
@@ -73,9 +73,9 @@ Note that if the instance is not found, the container won't be able to construct
 
 ## External services
 
-The kangaru library also provide two supplied services specialized for cases where instances are created from an external system.
+The kangaru library also provides two supplied services specialized for cases where instances are created from an external system.
 
-The first, `kgr::extern_service<T>` holds a reference to an instance of `T`. It behave just as a single service, but the instance must be provided to the container manually.
+The first, `kgr::extern_service<T>` holds a reference to an instance of `T`. It behaves like a single service but the instance must be provided to the container manually.
 
 Here's an example of extern service:
 
@@ -96,9 +96,9 @@ int main() {
 }
 ```
 
-The other external service is `kgr::extern_shared_service<T>`, which is analogous to the `kgr::extern_service` but inject and contains the service by shared pointers.
+The other external service is `kgr::extern_shared_service<T>`, which is analogous to the `kgr::extern_service` but is injected and contains the service by shared pointers.
 
-Here's the same example as above, but with teh shared external service:
+Here's the same example as above, but with the shared external service:
 
 ```c++
 struct Scene {};
@@ -121,7 +121,7 @@ int main() {
 
 The `emplace` function will only construct a service is it's not in the container yet. But what if you wanted to replace an existing service?
 
-The container give you a way to explicitly replace a single service to it would be used in future injection. It's usage is similar to emplace:
+The container gives you a way to explicitly replace a single service to be used in future injection. Its usage is similar to emplace:
 
 ```c++
 kgr::container container;
@@ -134,8 +134,8 @@ Scene& scene2 = container.service<SceneService>();
 assert(&scene1 != &scene2); // passes, these are different instances of scenes
 ```
 
-Note that when replacing, the container will not destroy the old service. In our example, `scene1` is still valid after `replace` has been called.
-The lifetime of the first `SceneService` is not affected, and will be destroyed at the same time as the container.
+Note that when replacing a service the container will not destroy the old service. In our example, `scene1` is still valid after `replace` has been called.
+The lifetime of the first `SceneService` is not affected and will be destroyed at the same time as the container.
 
 To see more about supplied services, please see [example5](../examples/example5/example5.cpp).
 
